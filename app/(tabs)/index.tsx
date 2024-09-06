@@ -1,70 +1,83 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import {
+  Image,
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  Animated,
+} from "react-native";
+import { PinchGestureHandler } from "react-native-gesture-handler";
+//AIzaSyAvSdFuwZWqm9DutE4iyGJaU5-Tz2VwZe0
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
+import { useEffect, useState } from "react";
+import { googleFetch } from "@/utils/google-fetch";
+import { appendData } from "@/utils/appendData";
+import ImageViewer from "react-native-image-zoom-viewer";
+import { Modal } from "react-native";
 export default function HomeScreen() {
+  const [name, setName] = useState<string>("");
+  const [visible, setVisible] = useState<boolean>(false);
+  const [age, setAge] = useState<string>("");
+
+  const onChangeName = (name: string) => {
+    setName(name);
+  };
+  const handlerGetProductData = () => {
+    googleFetch("product");
+  };
+  const handlerGetUserData = () => {
+    googleFetch("user");
+  };
+  const onChangeAge = (age: string) => {
+    setAge(age);
+  };
+  const newUserData = [
+    ["Alice", "USA", "30"],
+    ["Bob", "UK", "25"],
+  ];
+  // const handlerPinch = Animated.event([{ nativeEvent: { scale } }], {
+  //   useNativeDriver: true,
+  // });
+  // appendData("user", newUserData);
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View>
+      <TextInput onChangeText={onChangeName} value={name} />
+      <TextInput onChangeText={onChangeAge} value={age} />
+      <View style={{ gap: 20 }}>
+        <Pressable onPress={handlerGetUserData}>
+          <Text>User</Text>
+        </Pressable>
+        <Pressable onPress={handlerGetProductData}>
+          <Text>Product</Text>
+        </Pressable>
+      </View>
+      <View style={styles.zoomingView}>
+        <Pressable onPress={() => setVisible(true)} />
+        <Modal visible={visible} transparent={true}>
+          <Image source={require("../../assets/images/random.png")} />
+          <Pressable onPress={() => setVisible(false)} />
+        </Modal>
+        {/* <PinchGestureHandler onGestureEvent={handlerPinch}>
+          <Animated.Image
+            source={require("../../assets/images/random.png")}
+            style={(styles.imageStyle, { transform: [{ scale }] })}
+          />
+        </PinchGestureHandler> */}
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  zoomingView: {
+    width: 200,
+    height: 200,
+
+    backgroundColor: "red",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  imageStyle: {
+    width: 200,
+    height: 200,
   },
 });
